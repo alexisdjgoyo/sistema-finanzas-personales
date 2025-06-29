@@ -13,10 +13,11 @@ RUN apk add --no-cache \
     libxml2-dev \
     oniguruma-dev \
     libzip-dev \
-    gd-dev
+    gd-dev \
+    icu-dev
 
 # Instalar extensiones PHP
-RUN docker-php-ext-install pdo_mysql opcache bcmath exif pcntl gd zip
+RUN docker-php-ext-install pdo_mysql opcache bcmath exif pcntl gd zip intl xml
 
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
