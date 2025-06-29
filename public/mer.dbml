@@ -1,0 +1,52 @@
+Table users{
+  id int [pk, increment]
+  name varchar
+  email varchar [unique]
+  email_verified_at datetime
+  password varchar
+  remember_token varchar
+  created_at datetime
+  updated_at datetime
+}
+
+Table categories{
+  id int [pk, increment]
+  name varchar(255)
+  description varchar(500)
+  type enum('ingreso', 'gasto')
+  created_at datetime
+  updated_at datetime
+}
+
+Table transactions{
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  category_id int [ref: > categories.id]
+  amount decimal(10,2)
+  description varchar(350)
+  image varchar(420)
+  created_at datetime
+  updated_at datetime
+}
+
+Table budgets{
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  category_id int [ref: > categories.id]
+  allocated_amount decimal(10,2)
+  start_date date
+  end_date date
+  created_at datetime
+  updated_at datetime
+}
+
+Table accounts{
+  id int [pk, increment]
+  user_id int [ref: > users.id]
+  name varchar(255)
+  description varchar(500)
+  type enum('debit', 'credit', 'cash', 'investment', 'other', 'savings', 'loan')
+  balance decimal(10,2)
+  created_at datetime
+  updated_at datetime
+}
