@@ -14,13 +14,23 @@ RUN apk add --no-cache \
     oniguruma-dev \
     libzip-dev \
     gd-dev \
-    icu-dev
+    icu-dev \
+    xz
 
 # Instalar extensiones PHP
 RUN docker-php-ext-install pdo_mysql opcache bcmath exif pcntl gd zip intl xml
 
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Instalar Node.js y npm desde los repositorios de Alpine (versión más reciente disponible)
+RUN apk add --no-cache nodejs npm
+
+# Verificar instalación de Node.js
+RUN ls -l /usr/local/bin && which node && node -v || echo "Node.js no encontrado tras la instalación"
+
+# Asegurar que node, npm y npx estén en el PATH
+ENV PATH="/usr/local/bin:/usr/bin:$PATH"
 
 # Configurar permisos iniciales para el volumen compartido
 RUN chown -R www-data:www-data /var/www && \

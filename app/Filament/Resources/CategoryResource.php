@@ -8,27 +8,42 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Forms\Components\Card;
 
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-briefcase';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required(),
-                Forms\Components\TextInput::make('description')
-                    ->required(),
-                Forms\Components\Select::make('type')
-                    ->options([
-                        'income' => 'Ingreso',
-                        'spending'   => 'Gasto',
-                    ])->native(false)
-                    ->required(),
+                Card::make("Llenar los campos del formulario")
+                ->schema([
+                    Forms\Components\Grid::make()
+                        // ->columns(2)
+                        // ->columnSpan(2)
+                        ->schema([
+                            Forms\Components\TextInput::make('name')
+                                ->label('Nombre de la categoría')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\TextInput::make('description')
+                                ->label('Descripción de la categoría')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\Select::make('type')
+                                ->options([
+                                    'income' => 'Ingreso',
+                                    'spending' => 'Gasto',
+                                ])
+                                ->label('Tipo de movimiento')
+                                ->native(false)
+                                ->searchable(),
+                        ]),
+                ]),
             ]);
     }
 
@@ -37,11 +52,11 @@ class CategoryResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
