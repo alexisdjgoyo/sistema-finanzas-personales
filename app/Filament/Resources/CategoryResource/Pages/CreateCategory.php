@@ -32,4 +32,14 @@ class CreateCategory extends CreateRecord
         return $this->getResource()::getUrl('index');
     }
 
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getCreateFormAction()
+                ->label(__('Guardar categoría'))
+                ->color('success'),
+            $this->getCancelFormAction()
+                ->label(__('Volver atrás')),
+        ];
+    }
 }

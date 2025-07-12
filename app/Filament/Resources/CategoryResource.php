@@ -1,14 +1,17 @@
 <?php
+
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CategoryResource\Pages;
-use App\Models\Category;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Category;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Filament\Forms\Components\Card;
+use Filament\Notifications\Notification;
+use App\Filament\Resources\CategoryResource\Pages;
+use Filament\Tables\Filters\SelectFilter;
 
 class CategoryResource extends Resource
 {
@@ -21,29 +24,29 @@ class CategoryResource extends Resource
         return $form
             ->schema([
                 Card::make("Llenar los campos del formulario")
-                ->schema([
-                    Forms\Components\Grid::make()
-                        // ->columns(2)
-                        // ->columnSpan(2)
-                        ->schema([
-                            Forms\Components\TextInput::make('name')
-                                ->label('Nombre de la categoría')
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\TextInput::make('description')
-                                ->label('Descripción de la categoría')
-                                ->required()
-                                ->maxLength(255),
-                            Forms\Components\Select::make('type')
-                                ->options([
-                                    'income' => 'Ingreso',
-                                    'spending' => 'Gasto',
-                                ])
-                                ->label('Tipo de movimiento')
-                                ->native(false)
-                                ->searchable(),
-                        ]),
-                ]),
+                    ->schema([
+                        Forms\Components\Grid::make()
+                            // ->columns(2)
+                            // ->columnSpan(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Nombre de la categoría')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('description')
+                                    ->label('Descripción de la categoría')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('type')
+                                    ->options([
+                                        'income' => 'Ingreso',
+                                        'spending' => 'Gasto',
+                                    ])
+                                    ->label('Tipo de movimiento')
+                                    ->native(false)
+                                    ->searchable(),
+                            ]),
+                    ]),
             ]);
     }
 
@@ -53,7 +56,7 @@ class CategoryResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->label('Nro.')
-                    ->sortable()
+                    // ->sortable()
                     ->rowIndex(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
@@ -61,8 +64,16 @@ class CategoryResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Descripción')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                Tables\Columns\TextColumn::make('type'),
+                Tables\Columns\TextColumn::make('type')
+                    ->label('Tipo de movimiento')
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'income' => 'Ingreso',
+                        'spending' => 'Gasto',
+                        // default => 'Desconocido',
+                    })
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -73,10 +84,25 @@ class CategoryResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('type')
+                    ->label('Tipo de movimiento')
+                    ->options([
+                        'income' => 'Ingreso',
+                        'spending' => 'Gasto',
+                    ])
+                    ->placeholder('Todos'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->button(),
+                Tables\Actions\DeleteAction::make()
+                    ->button()
+                    ->successNotification(
+                        Notification::make()
+                            ->title(__('Categoría eliminada'))
+                            ->body(__('La categoría ha sido eliminada exitosamente.'))
+                            ->success()
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
