@@ -8,10 +8,10 @@ use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Filament\Forms\Components\Card;
+use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
-use App\Filament\Resources\CategoryResource\Pages;
 use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Resources\CategoryResource\Pages;
 
 class CategoryResource extends Resource
 {
@@ -23,7 +23,7 @@ class CategoryResource extends Resource
     {
         return $form
             ->schema([
-                Card::make("Llenar los campos del formulario")
+                Section::make("Llenar los campos del formulario")
                     ->schema([
                         Forms\Components\Grid::make()
                             // ->columns(2)

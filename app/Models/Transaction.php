@@ -17,6 +17,7 @@ class Transaction extends Model
         'amount',
         'description',
         'name',
+        'date',
         'image'
     ];
 
@@ -29,6 +30,7 @@ class Transaction extends Model
     {
         return [
             'amount'      => 'decimal:2',
+            'date'        => 'date',
             'created_at'  => 'datetime',
             'updated_at'  => 'datetime',
         ];
