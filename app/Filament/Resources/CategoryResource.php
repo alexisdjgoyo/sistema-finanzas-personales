@@ -41,6 +41,7 @@ class CategoryResource extends Resource
                                     ->options([
                                         'income' => 'Ingreso',
                                         'spending' => 'Gasto',
+                                        'transfer' => 'Transferencia',
                                     ])
                                     ->label('Tipo de movimiento')
                                     ->native(false)
@@ -54,24 +55,27 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                Tables\Columns\TextColumn::make('nro')
                     ->label('Nro.')
                     // ->sortable()
                     ->rowIndex(),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('Id de categoría')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->label('Descripción')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('description')
+                //     ->label('Descripción')
+                //     ->toggleable(isToggledHiddenByDefault: true)
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Tipo de movimiento')
                     ->formatStateUsing(fn(string $state): string => match ($state) {
                         'income' => 'Ingreso',
                         'spending' => 'Gasto',
-                        // default => 'Desconocido',
+                        'transfer' => 'Transferencia'
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -89,24 +93,25 @@ class CategoryResource extends Resource
                     ->options([
                         'income' => 'Ingreso',
                         'spending' => 'Gasto',
+                        'transfer' => 'Transferencia',
                     ])
                     ->placeholder('Todos'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->button(),
-                Tables\Actions\DeleteAction::make()
-                    ->button()
-                    ->successNotification(
-                        Notification::make()
-                            ->title(__('Categoría eliminada'))
-                            ->body(__('La categoría ha sido eliminada exitosamente.'))
-                            ->success()
-                    ),
+                // Tables\Actions\DeleteAction::make()
+                //     ->button()
+                //     ->successNotification(
+                //         Notification::make()
+                //             ->title(__('Categoría eliminada'))
+                //             ->body(__('La categoría ha sido eliminada exitosamente.'))
+                //             ->success()
+                //     ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

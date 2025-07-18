@@ -87,5 +87,10 @@ class DatabaseSeeder extends Seeder
             'description' => 'Gastos relacionados a belleza y cuidado personal: peluquería, cosméticos, etc.',
             'type' => 'spending',
         ]);
+        Category::create([
+            'name' => 'Transferencia entre cuentas',
+            'description' => 'Transacciones de Transferencia entre cuentas',
+            'type' => 'transfer',
+        ]);
     }
 }

@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name',255)->unique();
-            $table->string('description',500)->unique();
-            $table->enum('type', ['income', 'spending']);
+            $table->string('name', 255)->unique();
+            $table->string('description', 500)->unique();
+            $table->enum('type', ['income', 'spending', 'transfer'])
+                ->comment('Tipo de movimiento: ingreso, gasto o transferencia');
             $table->timestamps();
         });
     }

@@ -29,13 +29,13 @@ class EditCategory extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
-                ->successNotification(
-                    Notification::make()
-                        ->title(__('Categoría eliminada'))
-                        ->body(__('La categoría ha sido eliminada exitosamente.'))
-                        ->success()
-                )
+            // Actions\DeleteAction::make()
+            //     ->successNotification(
+            //         Notification::make()
+            //             ->title(__('Categoría eliminada'))
+            //             ->body(__('La categoría ha sido eliminada exitosamente.'))
+            //             ->success()
+            //     )
         ];
     }
 }
