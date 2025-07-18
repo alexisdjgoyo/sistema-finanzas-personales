@@ -5,9 +5,11 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
+use App\Models\Account;
 use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Enums\CategoryType;
 use App\Models\Transaction;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
@@ -24,6 +26,21 @@ class TransactionResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getNavigationLabel(): string
+    {
+        return __("Transactions");
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __("Transaction");
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __("Transactions");
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -33,12 +50,19 @@ class TransactionResource extends Resource
                         Forms\Components\Grid::make()
                             ->columns(1)
                             ->schema([
-                                Forms\Components\Select::make('user_id')
-                                    ->label('Usuario')
+                                Forms\Components\Select::make('account_id')
+                                    ->label('Cuenta')
                                     ->required()
                                     ->options(
-                                        User::all()->pluck('name', 'id')
-                                    ),
+                                        Account::all()->pluck('name', 'id')
+                                    )
+                                    ->native(false)
+                                    ->searchable()
+                                    ->live() // Para que el formulario se recargue y evalúe la visibilidad condicional
+                                    ->afterStateUpdated(function (Forms\Set $set) {
+                                        // Resetea el campo de cuenta destino si la categoría ya no es transferencia
+                                        $set('cuenta_destino_id', null);
+                                    }),
                                 Forms\Components\Select::make('category_id')
                                     ->label('Categoría')
                                     ->required()
@@ -46,7 +70,42 @@ class TransactionResource extends Resource
                                         Category::all()->pluck('name', 'id')
                                     )
                                     ->native(false)
-                                    ->searchable(),
+                                    ->searchable()
+                                    ->live() // Para que el formulario se recargue y evalúe la visibilidad condicional
+                                    ->afterStateUpdated(function (Forms\Set $set) {
+                                        // Resetea el campo de cuenta destino si la categoría ya no es transferencia
+                                        $set('destination_account_id', null);
+                                    }),
+                                // --- Campo para la cuenta destino (condicional) ---
+                                Forms\Components\Select::make('destination_account_id')
+                                    ->label('Cuenta Destino de Transferencia')
+                                    ->options(fn(Forms\Get $get) => Account::where('id', '!=', $get('account_id'))->pluck('name', 'id'))
+                                    ->required()
+                                    ->native(false)
+                                    ->searchable()
+                                    ->placeholder('Selecciona la cuenta destino')
+                                    ->visible(function (Forms\Get $get) {
+                                        // Obtiene la categoría seleccionada
+                                        $CategoryId = $get('category_id');
+                                        if (!$CategoryId) {
+                                            return false; // No hay categoría seleccionada
+                                        }
+                                        // Busca la categoría y verifica su tipo
+                                        $category = Category::find($CategoryId);
+                                        return $category && $category->type === CategoryType::TRANSFER->value;
+                                    })
+                                    ->rules([
+                                        // Validación adicional para asegurar que no sea la misma cuenta
+                                        function (Forms\Get $get) {
+                                            return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                                if ($get('category_id') && Category::find($get('category_id'))->type === CategoryType::TRANSFER->value) {
+                                                    if ($value === $get('account_id')) {
+                                                        $fail("La cuenta de destino no puede ser la misma que la cuenta de origen.");
+                                                    }
+                                                }
+                                            };
+                                        },
+                                    ]),
                                 Forms\Components\TextInput::make('amount')
                                     ->label('Monto')
                                     ->required()

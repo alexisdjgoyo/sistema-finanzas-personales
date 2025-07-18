@@ -87,7 +87,8 @@ class AccountResource extends Resource
                     ->label('Tipo')
                     ->formatStateUsing(fn(string $state): string => AccountType::from($state)->label())
                     ->searchable(),
-                Tables\Columns\TextColumn::make('balance')
+                Tables\Columns\TextColumn::make('current_balance')
+                    ->label('Saldo actual')
                     ->numeric()
                     ->money()
                     ->sortable(),

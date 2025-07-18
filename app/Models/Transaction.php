@@ -18,7 +18,9 @@ class Transaction extends Model
         'description',
         'name',
         'date',
-        'image'
+        'image',
+        'account_id',
+        'transaction_related_id'
     ];
 
     /**
