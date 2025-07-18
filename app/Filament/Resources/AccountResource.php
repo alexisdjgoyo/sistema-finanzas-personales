@@ -20,6 +20,20 @@ class AccountResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
+    public static function getNavigationLabel(): string
+    {
+        return __("Accounts");
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __("Account");
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __("Accounts");
+    }
     public static function form(Form $form): Form
     {
         return $form
@@ -53,6 +67,7 @@ class AccountResource extends Resource
                                     ->prefixIcon('heroicon-o-currency-dollar')
                                     ->required()
                                     ->numeric()
+                                    ->disabled(fn(?string $operation): bool => $operation !== 'create')
                                     ->default(0),
                             ])
                     ])
