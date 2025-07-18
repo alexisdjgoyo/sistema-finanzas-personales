@@ -7,6 +7,7 @@ use Filament\Tables;
 use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Enums\CategoryType;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
@@ -18,6 +19,21 @@ class CategoryResource extends Resource
     protected static ?string $model = Category::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-briefcase';
+
+    public static function getNavigationLabel(): string
+    {
+        return __("Categories");
+    }
+
+    public static function getModelLabel(): string
+    {
+        return __("Category");
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __("Categories");
+    }
 
     public static function form(Form $form): Form
     {
@@ -38,11 +54,7 @@ class CategoryResource extends Resource
                                     ->required()
                                     ->maxLength(255),
                                 Forms\Components\Select::make('type')
-                                    ->options([
-                                        'income' => 'Ingreso',
-                                        'spending' => 'Gasto',
-                                        'transfer' => 'Transferencia',
-                                    ])
+                                    ->options(CategoryType::toOptions())
                                     ->label('Tipo de movimiento')
                                     ->native(false)
                                     ->searchable(),
@@ -72,11 +84,7 @@ class CategoryResource extends Resource
                 //     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Tipo de movimiento')
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'income' => 'Ingreso',
-                        'spending' => 'Gasto',
-                        'transfer' => 'Transferencia'
-                    })
+                    ->formatStateUsing(fn(string $state): string => CategoryType::from($state)->label())
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -90,11 +98,7 @@ class CategoryResource extends Resource
             ->filters([
                 SelectFilter::make('type')
                     ->label('Tipo de movimiento')
-                    ->options([
-                        'income' => 'Ingreso',
-                        'spending' => 'Gasto',
-                        'transfer' => 'Transferencia',
-                    ])
+                    ->options(CategoryType::toOptions())
                     ->placeholder('Todos'),
             ])
             ->actions([

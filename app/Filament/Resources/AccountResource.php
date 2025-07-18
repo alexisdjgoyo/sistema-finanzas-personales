@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\AccountType;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Account;
@@ -52,14 +53,7 @@ class AccountResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\Select::make('type')
                                     ->label('Tipo de cuenta')
-                                    ->options([
-                                        'debit' => 'Débito',
-                                        'credit' => 'Crédito',
-                                        'cash' => 'Efectivo',
-                                        'investment' => 'Inversión',
-                                        'other' => 'Otro',
-                                        'savings' => 'Cuenta de ahorro'
-                                    ])
+                                    ->options(AccountType::toOptions())
                                     ->native(false)
                                     ->required(),
                                 Forms\Components\TextInput::make('balance')
@@ -67,6 +61,7 @@ class AccountResource extends Resource
                                     ->prefixIcon('heroicon-o-currency-dollar')
                                     ->required()
                                     ->numeric()
+                                    ->minValue(0)
                                     ->disabled(fn(?string $operation): bool => $operation !== 'create')
                                     ->default(0),
                             ])
@@ -78,22 +73,19 @@ class AccountResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
+                Tables\Columns\TextColumn::make('nro')
                     ->label('Nro.')
+                    // ->sortable()
                     ->rowIndex(),
+                Tables\Columns\TextColumn::make('id')
+                    ->label('Id de cuenta')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('type')
                     ->label('Tipo')
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'debit' => 'Débito',
-                        'credit' => 'Crédito',
-                        'cash' => 'Efectivo',
-                        'investment' => 'Inversión',
-                        'other' => 'Otro',
-                        'savings' => 'Cuenta de ahorro'
-                    })
+                    ->formatStateUsing(fn(string $state): string => AccountType::from($state)->label())
                     ->searchable(),
                 Tables\Columns\TextColumn::make('balance')
                     ->numeric()

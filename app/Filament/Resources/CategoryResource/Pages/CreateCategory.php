@@ -36,8 +36,8 @@ class CreateCategory extends CreateRecord
     {
         return [
             $this->getCreateFormAction()
-                ->label(__('Guardar categoría'))
-                ->color('success'),
+                ->label(__('Guardar categoría')),
+                // ->color('success'),
             $this->getCancelFormAction()
                 ->label(__('Volver atrás')),
         ];
